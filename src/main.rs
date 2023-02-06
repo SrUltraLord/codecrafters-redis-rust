@@ -1,20 +1,33 @@
-use std::io::Result;
-use std::net::TcpListener;
+use std::io::{Result, Write};
+use std::net::{TcpListener, TcpStream};
+
+mod marshall;
+
+use marshall::error_marshaller;
+use marshall::marshaller::Marshaller;
+use marshall::string_marshaller::StringMarshaller;
+
+fn handle_connection(stream: &mut TcpStream) -> usize {
+    let response = StringMarshaller::new("PONG");
+
+    let answer = stream.write(response.marshall().as_bytes()).expect("");
+
+    answer
+}
 
 fn main() -> Result<()> {
-    // You can use print statements as follows for debugging, they'll be visible when running tests.
-    println!("Logs from your program will appear here!");
+    println!("[Ultra Redis]");
+    println!("Listening on port 6379...");
 
-    let listener = TcpListener::bind("127.0.0.1:6379")
-        .expect("Could not bind to port 6379");
+    let listener = TcpListener::bind("127.0.0.1:6379").expect("Could not bind to port 6379");
 
     for stream in listener.incoming() {
-        match stream  {
-            Ok(_stream) => {
-                println!("Accepting connection!")
-            },
+        match stream {
+            Ok(mut _stream) => {
+                handle_connection(&mut _stream);
+            }
             Err(e) => {
-                println!("error: {}", e);
+                error_marshaller::marshall_error(&e);
             }
         }
     }
