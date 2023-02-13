@@ -1,20 +1,23 @@
 // See RESP protocol description
 // https://redis.io/docs/reference/protocol-spec
-pub(crate) enum DataType {
+//
+pub const CRLF: &str = "\r\n";
+
+pub(crate) enum RedisDataType {
     String,
-    Error,
-    // Integer,
     // BulkString,
+    // Error,
+    // Integer,
     // Array,
 }
 
-impl DataType {
+impl RedisDataType {
     pub fn first_byte(&self) -> &str {
         match self {
             Self::String => "+",
-            Self::Error => "-",
-            // Self::Integer => ":",
             // Self::BulkString => "$",
+            // Self::Error => "-",
+            // Self::Integer => ":",
             // Self::Array => "*",
         }
     }

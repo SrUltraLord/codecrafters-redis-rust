@@ -1,3 +1,4 @@
-pub trait Marshaller {
-    fn marshall(&self) -> String;
+pub trait Marshaller<T> {
+    fn init() -> Self;
+    fn marshall(&self, value: T) -> String;
 }
