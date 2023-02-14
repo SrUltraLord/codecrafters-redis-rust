@@ -1,26 +1,16 @@
-use std::error;
+use tokio;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
 
 use crate::marshall::marshaller::Marshaller;
 use crate::marshall::string_marshaller::StringMarshaller;
 
-// This struct handles client's connection
-pub struct ClientListener<'a> {
-    stream: &'a mut TcpStream,
-}
+pub async fn handle_client_stream(mut stream: TcpStream) {
+    tokio::spawn(async move {
+        let mut buffer: [u8; 1024] = [0; 1024];
 
-impl<'a> ClientListener<'a> {
-    pub fn init(stream: &'a mut TcpStream) -> Self {
-        Self { stream }
-    }
-
-    pub async fn handle_client_stream(
-        &mut self,
-        buffer: &mut [u8; 1024],
-    ) -> Result<(), Box<dyn error::Error>> {
         loop {
-            let bytes_read = self.stream.read(buffer).await?;
+            let bytes_read = stream.read(&mut buffer).await.unwrap();
 
             if bytes_read == 0 {
                 break;
@@ -28,9 +18,7 @@ impl<'a> ClientListener<'a> {
 
             let serialized_response = StringMarshaller::init().marshall("PONG");
 
-            self.stream.write(serialized_response.as_bytes()).await?;
+            stream.write(serialized_response.as_bytes()).await.unwrap();
         }
-
-        Ok(())
-    }
+    });
 }

@@ -3,7 +3,7 @@ use std::error;
 use tokio;
 use tokio::net::TcpListener;
 
-use crate::tasks::client::ClientListener;
+use crate::tasks::client;
 
 pub struct Master {
     address: String,
@@ -27,13 +27,8 @@ impl Master {
 
     async fn accept_connections(listener: &TcpListener) -> Result<(), Box<dyn error::Error>> {
         loop {
-            let (mut stream, _) = listener.accept().await?;
-
-            let mut buffer = [0; 1024];
-
-            ClientListener::init(&mut stream)
-                .handle_client_stream(&mut buffer)
-                .await?;
+            let (stream, _) = listener.accept().await?;
+            client::handle_client_stream(stream).await;
         }
     }
 }
