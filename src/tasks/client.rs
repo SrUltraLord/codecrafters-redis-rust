@@ -2,8 +2,7 @@ use tokio;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
 
-use crate::marshall::marshaller::Marshaller;
-use crate::marshall::string_marshaller::StringMarshaller;
+use crate::command::command_handler;
 
 pub async fn handle_client_stream(mut stream: TcpStream) {
     tokio::spawn(async move {
@@ -16,7 +15,8 @@ pub async fn handle_client_stream(mut stream: TcpStream) {
                 break;
             }
 
-            let serialized_response = StringMarshaller::init().marshall("PONG");
+            let serialized_response =
+                command_handler::handle_command_from_buffer(&buffer[..bytes_read].to_owned());
 
             stream.write(serialized_response.as_bytes()).await.unwrap();
         }

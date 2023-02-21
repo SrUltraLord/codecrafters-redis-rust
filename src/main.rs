@@ -1,6 +1,7 @@
 use std::env;
 use std::error::Error;
 
+mod command;
 mod marshall;
 mod tasks;
 
