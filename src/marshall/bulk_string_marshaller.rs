@@ -1,6 +1,7 @@
 use super::data_type::{RedisDataType, CRLF};
 use super::marshall_utils::{is_byte_pair_crlf, is_size_part};
 
+pub const NIL: &str = "$-1\r\n";
 const CRLF_SEPARATORS_FOR_BULK_STR: usize = 2;
 
 pub fn marshall(value: String) -> String {
@@ -49,6 +50,16 @@ pub fn unmarshall_from_buffer(
     }
 
     let result = String::from_utf8(result_buffer).unwrap_or(String::default());
+
+    let size = String::from_utf8(size_buffer)
+        .unwrap()
+        .parse::<usize>()
+        .unwrap_or(0);
+    let actual_size = result.len();
+
+    if size != actual_size {
+        return Err("Err string size does not match actual size".to_string());
+    }
 
     Ok((result, last_visited_idx))
 }

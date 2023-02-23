@@ -13,14 +13,17 @@ pub async fn handle_command_from_buffer(
     let command_args = array_marshaller::unmarshall_from_buffer(buffer);
     let (command, args) = parse_array_as_command(command_args.as_slice());
 
-    match command.as_str() {
+    let result: Result<String, String> = match command.as_str() {
         ping::NAME => ping::handle(&args),
         echo::NAME => echo::handle(&args),
         set::NAME => set::handle(&args, map).await,
         get::NAME => get::handle(&args, map).await,
-        _ => {
-            error_marshaller::marshall(format!("ERR unkown command '{}'.", command.to_lowercase()))
-        }
+        _ => Err(format!("ERR unkown command '{}'", command.to_lowercase())),
+    };
+
+    match result {
+        Ok(v) => v,
+        Err(e) => error_marshaller::marshall(e),
     }
 }
 
