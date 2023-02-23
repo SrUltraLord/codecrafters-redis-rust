@@ -3,6 +3,7 @@ use std::error::Error;
 
 mod command;
 mod marshall;
+mod sync;
 mod tasks;
 
 use crate::tasks::master;
