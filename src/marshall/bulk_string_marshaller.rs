@@ -11,7 +11,6 @@ pub fn marshall(value: String) -> String {
     format!("{}{}{}{}{}", first_byte, string_length, CRLF, value, CRLF)
 }
 
-// TODO: Handle specified length error.
 pub fn unmarshall_from_buffer(
     buffer: &[u8],
     start_idx: Option<&usize>,

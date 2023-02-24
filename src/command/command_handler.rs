@@ -5,10 +5,11 @@ use tokio::sync::Mutex;
 
 use crate::command::{echo, get, ping, set};
 use crate::marshall::{array_marshaller, error_marshaller};
+use crate::sync::redis_value::RedisValue;
 
 pub async fn handle_command_from_buffer(
     buffer: &[u8],
-    map: Arc<Mutex<HashMap<String, String>>>,
+    map: Arc<Mutex<HashMap<String, RedisValue>>>,
 ) -> String {
     let command_args = array_marshaller::unmarshall_from_buffer(buffer);
     let (command, args) = parse_array_as_command(command_args.as_slice());

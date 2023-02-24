@@ -7,10 +7,11 @@ use tokio::net::TcpStream;
 use tokio::sync::Mutex;
 
 use crate::command::command_handler;
+use crate::sync::redis_value::RedisValue;
 
 pub async fn handle_client_stream(
     mut stream: TcpStream,
-    sync_map: Arc<Mutex<HashMap<String, String>>>,
+    sync_map: Arc<Mutex<HashMap<String, RedisValue>>>,
 ) {
     tokio::spawn(async move {
         let mut buffer: [u8; 1024] = [0; 1024];

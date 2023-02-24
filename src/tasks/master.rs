@@ -6,11 +6,12 @@ use tokio;
 use tokio::net::TcpListener;
 use tokio::sync::Mutex;
 
+use crate::sync::redis_value::RedisValue;
 use crate::tasks::client;
 
 pub struct Master {
     address: String,
-    map: Arc<Mutex<HashMap<String, String>>>,
+    map: Arc<Mutex<HashMap<String, RedisValue>>>,
 }
 
 impl Master {
